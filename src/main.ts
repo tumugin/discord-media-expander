@@ -9,4 +9,4 @@ const config = loadConfig()
 
 const client = new Client()
 client.login(config.apiKey)
-client.on('message', async (message) => onReciveMessage(client, message))
+client.on('message', async (message) => onReciveMessage(config, client, message))

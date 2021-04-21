@@ -1,14 +1,15 @@
 import { Message, Client, TextChannel } from 'discord.js'
 import { extractDiscordMessageUrl, isAttachmentMediaFile, isDiscordMessageUrlMessage } from './utils'
+import { Config } from './config'
 
-export async function onReciveMessage(client: Client, message: Message) {
+export async function onReciveMessage(config: Config, client: Client, message: Message) {
   if (message.author.id === client.user?.id) {
     return
   }
-  if (!isDiscordMessageUrlMessage(message.content)) {
+  if (!isDiscordMessageUrlMessage(config.discordBaseUrl, message.content)) {
     return
   }
-  const parsedMessage = extractDiscordMessageUrl(message.content)
+  const parsedMessage = extractDiscordMessageUrl(config.discordBaseUrl, message.content)
   const channel = client.channels.cache.get(parsedMessage.channelId) as TextChannel
   const fetchedMessageCollection = await channel.messages.fetch({ around: parsedMessage.messageId, limit: 1 })
   const firstMessage = fetchedMessageCollection.first()

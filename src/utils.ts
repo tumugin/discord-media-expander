@@ -1,14 +1,12 @@
 import { MessageAttachment } from 'discord.js'
 
-const baseURI = 'https://discord.com/channels/590565947581005864/'
-
-export function isDiscordMessageUrlMessage(message: string) {
-  return message.startsWith(baseURI)
+export function isDiscordMessageUrlMessage(baseUrl: string, message: string) {
+  return message.startsWith(baseUrl) && validateUrl(baseUrl, message)
 }
 
-export function extractDiscordMessageUrl(url: string) {
-  const splittedUrl = url.replace(baseURI, '').split('/')
-  if (isNaN(parseInt(splittedUrl[0], 10)) || isNaN(parseInt(splittedUrl[1], 10))) {
+export function extractDiscordMessageUrl(baseUrl: string, url: string) {
+  const splittedUrl = splitUrl(baseUrl, url)
+  if (!validateUrl(baseUrl, url)) {
     throw new Error('不正なURLが渡されました')
   }
   return {
@@ -17,7 +15,21 @@ export function extractDiscordMessageUrl(url: string) {
   }
 }
 
+function validateUrl(baseUrl: string, url: string) {
+  const splittedUrl = splitUrl(baseUrl, url)
+  return !(
+    isNaN(parseInt(splittedUrl[0], 10)) ||
+    !splittedUrl[0] ||
+    isNaN(parseInt(splittedUrl[1], 10)) ||
+    !splittedUrl[1]
+  )
+}
+
+function splitUrl(baseUrl: string, url: string) {
+  return url.replace(baseUrl, '').split('/')
+}
+
 export function isAttachmentMediaFile(attachment: MessageAttachment) {
   const attachmentUrl = attachment.url
-  return attachmentUrl.match(/.*\.(png|jpg|jpeg|bmp|gif|webp)$/gim)
+  return attachmentUrl.match(/.*\.(png|jpg|jpeg|bmp|gif|webp)$/gim)?.length === 1
 }

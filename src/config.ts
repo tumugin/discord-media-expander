@@ -1,9 +1,15 @@
 import dotenv from 'dotenv'
 
-export function loadConfig() {
+export interface Config {
+  apiKey: string
+  discordBaseUrl: string
+}
+
+export function loadConfig(): Config {
   dotenv.config()
   return {
     apiKey: process.env.API_KEY ?? notFoundConfig('API_KEY'),
+    discordBaseUrl: process.env.BASE_URL ?? notFoundConfig('BASE_URL'),
   }
 }
 
